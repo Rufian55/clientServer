@@ -5,7 +5,8 @@
 * makefile.  You must start the chatserve server prior to running chatclient and use the
 * port number chatserve is running on in the command line call when starting chatclient.
 * Usage: <chatclient executable name> <hostname> <port number>
-* On nix type systems, hostname can be retrieved by calling "hostname -s".
+* On nix type systems, hostname can be retrieved by calling "hostname -s" in the directory
+* that chatserve is running.
 * To quit, enter "\quit", w/o the quotation marks, at the message prompt.
 ****************************************************************************************/
 #include <errno.h>
@@ -116,39 +117,39 @@ void chat(int socketFD, char *userName, char *serverName) {
 	int numBytesSent = 0;
 	int errorStatus = NULL;
 
-	// Initial message buffer set to null for both message buffers.
+	// Clear both message buffers as a precaution.
 	memset(messageIn, 0, sizeof(messageIn));
 	memset(messageOut, 0, sizeof(messageOut));
 
-	// Receive message?
+	// Receive message so client is postioned to be the chat initiator.
 	fgets(messageIn, MESSAGE_BUFFER, stdin);
 	fflush(stdin);
 
 	// Chat send/receive loop. Call to break exits program.
 	while (1) {
 		printf("%s> ", userName);				// User prompt.
-		fgets(messageIn, MESSAGE_BUFFER, stdin);	// Get user's message to send.
+		fgets(messageOut, MESSAGE_BUFFER, stdin);	// Get user's message to send.
 		fflush(stdin);
 
-		if (strcmp(messageIn, "\\quit\n") == 0) {
+		if (strcmp(messageOut, "\\quit\n") == 0) {
 			break;
 		}
 
 		// Send the user's message via socketFD / test for and exit on errors. [5]
-		if ((numBytesSent = send(socketFD, messageIn, strlen(messageIn), 0)) == -1) {
+		if ((numBytesSent = send(socketFD, messageOut, strlen(messageOut), 0)) == -1) {
 			fprintf(stderr, "Error sending data to chatserve host.\n");
 			exit(1);
 		}
 
 		// Receive a message via socketFD / test for and exit on errors. [5]
-		if ((errorStatus = recv(socketFD, messageOut, MESSAGE_BUFFER, 0)) == -1) {
+		if ((errorStatus = recv(socketFD, messageIn, MESSAGE_BUFFER, 0)) == -1) {
 			fprintf(stderr, "Error receiving data from chatserve host.\n");
 			exit(1);
 		} else if (errorStatus == 0) {
 			printf("Connection closed by server.\n");
 			break;
 		} else {
-			printf("%s> %s\n", serverName, messageOut);
+			printf("%s> %s\n", serverName, messageIn);
 		}
 
 		// Reset message buffers to null.
@@ -157,7 +158,7 @@ void chat(int socketFD, char *userName, char *serverName) {
 	}
 
 	close(socketFD);
-	printf("Chatserve closed connection.\n");
+	printf("Chatserve user \"%s\" closed connection.\n", serverName);
 }
 
 /* CITATIONS:

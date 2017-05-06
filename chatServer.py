@@ -51,7 +51,7 @@ def chat(connectionSocket, clientName, userName):
         """ Receive Messages. """
         messageReceived = connectionSocket.recv(MESSAGEBUFFER)
         if messageReceived == "":
-            print "Connection closed."
+            print "Connection closed by chatclient \"{}\".".format(clientName)
             print "Waiting for new connection..."
             break
         print "{}> {}".format(clientName, messageReceived)
@@ -75,8 +75,8 @@ if __name__ == "__main__":
     """ Register signal handler for SIGINT [1] """
     signal.signal(signal.SIGINT, signalHandler)
     
-    print "\nSend '\quit' (w/o '') to end chat with current client.\n\
-            Enter Ctrl+c to Stop ChatServe at any time.\n"
+    print "\nSend '\quit' (w/o '') to end chat with current client."
+    print "Enter Ctrl+c to Stop ChatServe at any time."
 
     serverSocket = startServer()
     userName = getUserName()
