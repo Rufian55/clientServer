@@ -1,6 +1,5 @@
 /****************************************************************************************
-* CS372-400-S17, Project 1, 7 May 2017, Chris Kearns (kearnsc@oregonstate.edu)
-* chatClient.c is the source file for the client side chat module.
+* chatClient.c - source file for the client side chat module.
 * Commpile individually as "gcc chatclient.c -g -Wall -o chatclient" or with provided
 * makefile.  You must start the chatserve server prior to running chatclient and use the
 * port number chatserve is running on in the command line call when starting chatclient.
@@ -66,7 +65,7 @@ struct addrinfo *getAddressInfo(char *inputAddress, char *port) {
 	struct addrinfo hints, *result;
 
 	memset(&hints, 0, sizeof hints);	// Initial null set of hints addrinfo struct.
-	hints.ai_family = AF_INET;		// IPv4.
+	hints.ai_family = AF_INET;	      // IPv4.
 	hints.ai_socktype = SOCK_STREAM;	// TCP.
 
 	/* Populate results addrinfo struct from running instance of chatserve and if needed,
@@ -127,8 +126,8 @@ void chat(int socketFD, char *userName, char *serverName) {
 
 	// Chat send/receive loop. Call to break exits program.
 	while (1) {
-		printf("%s> ", userName);				// User prompt.
-		fgets(messageOut, MESSAGE_BUFFER, stdin);	// Get user's message to send.
+		printf("%s> ", userName);                 // User prompt.
+		fgets(messageOut, MESSAGE_BUFFER, stdin); // Get user's message to send.
 		fflush(stdin);
 
 		if (strcmp(messageOut, "\\quit\n") == 0) {
